@@ -39,7 +39,7 @@ jobs:
                         ${{ runner.os }}-php-
 
             -   name: Install dependencies
-                run: composer install --prefer-dist --no-progress
+                run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
             -   name: Execute tests
                 run: composer test -- --colors=always
@@ -47,7 +47,7 @@ jobs:
             # Those should usually be a separate job, but as GitHub Actions currently does not support any form of sharing
             # steps or an image between them, extracting those to a separate job would mean a full blown copy-paste of this one.
             -   name: Install dependencies
-                run: composer install --prefer-dist --no-progress --working-dir=tools/phpstan
+                run: composer install --prefer-dist --no-progress --ignore-platform-reqs --working-dir=tools/phpstan
 
             -   name: Run phpstan
                 run: composer phpstan
