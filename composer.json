@@ -1,8 +1,8 @@
 {
 	"name": "tenantcloud/php-serialization",
 	"description": "TenantCloud's serialization for PHP",
-	"minimum-stability": "stable",
-	"license": "proprietary",
+	"minimum-stability": "dev",
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Oleksandr Prypkhan",
@@ -11,18 +11,39 @@
 	],
 	"require": {
 		"php": ">=8.0",
-		"vimeo/psalm": "^4.4"
+		"php-ds/php-ds": "dev-master",
+		"phpstan/phpstan-src": "0.12.x-dev",
+		"tenantcloud/php-better-reflection": "dev-master"
 	},
-	"require-dev": {
-		"pestphp/pest": "^1.0"
+	"suggest": {
+		"ext-ds": "*"
+	},
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/phpstan/phpstan-src"
+		}
+	],
+	"config": {
+		"platform": {
+			"php": "7.4.15"
+		},
+		"platform-check": false,
+		"sort-packages": true
 	},
 	"autoload": {
 		"psr-0": {
 			"": "src/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\": "tests/"
+		}
+	},
 	"scripts": {
+		"test": "./vendor/bin/pest",
 		"cs-fix": "./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix -v --show-progress=estimating",
-		"psalm": "./tools/psalm/vendor/bin/psalm"
+		"phpstan":  "./tools/phpstan/vendor/bin/phpstan analyse"
 	}
 }

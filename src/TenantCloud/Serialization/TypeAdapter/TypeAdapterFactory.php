@@ -2,14 +2,18 @@
 
 namespace TenantCloud\Serialization\TypeAdapter;
 
-use Psalm\Type;
-use ReflectionType;
+use PHPStan\Type\Type;
 use TenantCloud\Serialization\Serializer;
 
+/**
+ * @template T of TypeAdapter
+ */
 interface TypeAdapterFactory
 {
 	/**
-	 * @param object[] $annotations
+	 * @param object[] $attributes
+	 *
+	 * @return T|null
 	 */
-	public function create(Type $type, array $annotations, Serializer $serializer): ?TypeAdapter;
+	public function create(Type $typeAdapterType, Type $type, array $attributes, Serializer $serializer);
 }
