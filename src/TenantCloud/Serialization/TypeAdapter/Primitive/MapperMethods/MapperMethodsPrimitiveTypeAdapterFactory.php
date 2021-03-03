@@ -2,6 +2,7 @@
 
 namespace TenantCloud\Serialization\TypeAdapter\Primitive\MapperMethods;
 
+use Closure;
 use Ds\Sequence;
 use JetBrains\PhpStorm\Immutable;
 use PHPStan\Type\ObjectType;
@@ -13,19 +14,25 @@ use TenantCloud\Serialization\TypeAdapter\TypeAdapterFactory;
 use UnderflowException;
 
 #[Immutable]
-final class MapperMethodsTypeAdapterFactory implements TypeAdapterFactory
+final class MapperMethodsPrimitiveTypeAdapterFactory implements TypeAdapterFactory
 {
+	/** @var Sequence<MapperMethod> */
+	private Sequence $toMappers;
+
+	/** @var Sequence<MapperMethod> */
+	private Sequence $fromMappers;
+
 	private Type $typeAdapterType;
 
-	/**
-	 * @param Sequence<MapperMethod> $toMappers
-	 * @param Sequence<MapperMethod> $fromMappers
-	 */
 	public function __construct(
-		private Sequence $toMappers,
-		private Sequence $fromMappers,
+		Closure $resolveToMappers,
+		Closure $resolveFromMappers,
 	) {
+		$this->toMappers = $resolveToMappers($this);
+		$this->fromMappers = $resolveFromMappers($this);
 		$this->typeAdapterType = new ObjectType(PrimitiveTypeAdapter::class);
+
+		assert($this->toMappers || $this->fromMappers);
 	}
 
 	public function create(Type $typeAdapterType, Type $type, array $attributes, Serializer $serializer): ?TypeAdapter
@@ -34,8 +41,16 @@ final class MapperMethodsTypeAdapterFactory implements TypeAdapterFactory
 			return null;
 		}
 
-		$toMapper = $this->findMapper($this->toMappers, true, $type, $attributes);
-		$fromMapper = $this->findMapper($this->fromMappers, false, $type, $attributes);
+		$toMapper = $this->findMapper(
+			$this->toMappers,
+			$type,
+			$attributes
+		);
+		$fromMapper = $this->findMapper(
+			$this->fromMappers,
+			$type,
+			$attributes
+		);
 
 		if (!$toMapper && !$fromMapper) {
 			return null;
@@ -43,10 +58,11 @@ final class MapperMethodsTypeAdapterFactory implements TypeAdapterFactory
 
 		$fallbackDelegate = !$toMapper || !$fromMapper ? $serializer->adapter($typeAdapterType, $type, $attributes, $this) : null;
 
-		return new MapperMethodsTypeAdapter(
+		return new MapperMethodsPrimitiveTypeAdapter(
 			toMapper: $toMapper,
 			fromMapper: $fromMapper,
 			fallbackDelegate: $fallbackDelegate,
+			type: $type,
 			serializer: $serializer,
 		);
 	}
@@ -55,12 +71,16 @@ final class MapperMethodsTypeAdapterFactory implements TypeAdapterFactory
 	 * @param Sequence<MapperMethod> $mappers
 	 * @param object[]               $attributes
 	 */
-	private function findMapper(Sequence $mappers, bool $in, Type $type, array $attributes): ?MapperMethod
+	private function findMapper(Sequence $mappers, Type $type, array $attributes): ?MapperMethod
 	{
 		try {
 			return $mappers
 				->filter(
-					fn (MapperMethod $mapper) => ($in ? $mapper->in : $mapper->out)->accepts($type, true)->yes()
+					function (MapperMethod $mapper) use ($type) {
+						$method = $mapper->typeSubstituter->resolve($type);
+
+						return ($mapper->methodValueType)($method)->accepts($type, true)->yes();
+					}
 				)
 				->first();
 		} catch (UnderflowException) {

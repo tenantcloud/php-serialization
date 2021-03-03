@@ -3,12 +3,14 @@
 namespace TenantCloud\Serialization\TypeAdapter\Primitive\MapperMethods;
 
 use Closure;
-use Ds\Sequence;
 use JetBrains\PhpStorm\Immutable;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeWithClassName;
+use TenantCloud\BetterReflection\Reflection\FunctionParameterReflection;
+use TenantCloud\BetterReflection\Reflection\MethodReflection;
 use TenantCloud\Serialization\Serializer;
+use TenantCloud\Serialization\TypeAdapter\Primitive\MapperMethods\MapperMethodTypeSubstiter\MapperMethodTypeSubstituter;
 use TenantCloud\Serialization\TypeAdapter\Primitive\PrimitiveTypeAdapter;
-use TenantCloud\Serialization\TypeAdapter\TypeAdapter;
 
 /**
  * @template TIn
@@ -18,21 +20,44 @@ use TenantCloud\Serialization\TypeAdapter\TypeAdapter;
 final class MapperMethod
 {
 	/**
-	 * @param Sequence<Type>           $typeAdaptersToInject
-	 * @param Closure(TIn, TypeAdapter ...$adapters):        TOut $invoke
+	 * @param Closure(MethodReflection): Type $methodValueType
 	 */
 	public function __construct(
 		public Type $in,
-		private Sequence $typeAdaptersToInject,
 		public Type $out,
-		private Closure $invoke
+		private object $adapter,
+		public Closure $methodValueType,
+		public MapperMethodTypeSubstituter $typeSubstituter,
+		private MapperMethodsPrimitiveTypeAdapterFactory $mapperMethodsTypeAdapterFactory,
 	) {
 	}
 
-	public function invoke(Serializer $serializer, mixed $value): mixed
+	public function invoke(Serializer $serializer, Type $type, mixed $value): mixed
 	{
-		$adapters = $this->typeAdaptersToInject->map(fn (Type $type) => $serializer->adapter(PrimitiveTypeAdapter::class, $type));
+		$reflection = $this->typeSubstituter->resolve($type);
 
-		return ($this->invoke)($value, ...$adapters);
+		$injected = [];
+
+		$parameters = $reflection->parameters()->slice(1);
+
+		/** @var FunctionParameterReflection $typeParameter */
+		$typeParameter = $parameters[0] ?? null;
+
+		if ($typeParameter && $typeParameter->type() instanceof TypeWithClassName && is_a($typeParameter->type()->getClassName(), Type::class, true)) {
+			$parameters = $parameters->slice(1);
+
+			$injected[] = $type;
+		}
+
+		foreach ($parameters as $parameter) {
+			$injected[] = $serializer->adapter(
+				typeAdapterType: PrimitiveTypeAdapter::class,
+				type: $parameter->type()->getTypes()[0],
+				attributes: $parameter->attributes()->toArray(),
+				skipPast: $type->equals($this->out) ? $this->mapperMethodsTypeAdapterFactory : null,
+			);
+		}
+
+		return $reflection->invoke($this->adapter, $value, ...$injected);
 	}
 }

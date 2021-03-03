@@ -1,0 +1,5 @@
+services:
+	-
+		class: TenantCloud\Serialization\TypeAdapter\Primitive\Type\PrimitiveTypeNodeResolverExtension
+		tags:
+			- phpstan.phpDoc.typeNodeResolverExtension

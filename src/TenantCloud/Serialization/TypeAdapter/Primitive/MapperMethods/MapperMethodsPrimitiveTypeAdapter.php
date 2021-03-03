@@ -3,16 +3,18 @@
 namespace TenantCloud\Serialization\TypeAdapter\Primitive\MapperMethods;
 
 use JetBrains\PhpStorm\Immutable;
+use PHPStan\Type\Type;
 use TenantCloud\Serialization\Serializer;
 use TenantCloud\Serialization\TypeAdapter\Primitive\PrimitiveTypeAdapter;
 
 #[Immutable]
-final class MapperMethodsTypeAdapter implements PrimitiveTypeAdapter
+final class MapperMethodsPrimitiveTypeAdapter implements PrimitiveTypeAdapter
 {
 	public function __construct(
 		private ?MapperMethod $toMapper,
 		private ?MapperMethod $fromMapper,
 		private ?PrimitiveTypeAdapter $fallbackDelegate,
+		private Type $type,
 		private Serializer $serializer,
 	) {
 		// Make sure there's either both mappers or one of the mappers and a fallback.
@@ -26,7 +28,7 @@ final class MapperMethodsTypeAdapter implements PrimitiveTypeAdapter
 	public function serialize(mixed $value): mixed
 	{
 		return $this->toMapper ?
-			$this->toMapper->invoke($this->serializer, $value) :
+			$this->toMapper->invoke($this->serializer, $this->type, $value) :
 			$this->fallbackDelegate->serialize($value);
 	}
 
@@ -36,7 +38,7 @@ final class MapperMethodsTypeAdapter implements PrimitiveTypeAdapter
 	public function deserialize(mixed $value): mixed
 	{
 		return $this->fromMapper ?
-			$this->fromMapper->invoke($this->serializer, $value) :
+			$this->fromMapper->invoke($this->serializer, $this->type, $value) :
 			$this->fallbackDelegate->deserialize($value);
 	}
 }

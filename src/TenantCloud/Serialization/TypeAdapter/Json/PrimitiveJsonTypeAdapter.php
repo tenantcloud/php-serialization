@@ -5,7 +5,7 @@ namespace TenantCloud\Serialization\TypeAdapter\Json;
 use JetBrains\PhpStorm\Immutable;
 
 #[Immutable]
-final class JsonPrimitiveTypeAdapter implements JsonTypeAdapter
+final class PrimitiveJsonTypeAdapter implements JsonTypeAdapter
 {
 	/**
 	 * {@inheritDoc}

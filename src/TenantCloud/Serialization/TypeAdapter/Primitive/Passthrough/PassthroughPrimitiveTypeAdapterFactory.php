@@ -1,25 +1,29 @@
 <?php
 
-namespace TenantCloud\Serialization\TypeAdapter\Json;
+namespace TenantCloud\Serialization\TypeAdapter\Primitive\Passthrough;
 
 use JetBrains\PhpStorm\Immutable;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use TenantCloud\Serialization\Serializer;
-use TenantCloud\Serialization\TypeAdapter\Primitive\PrimitiveType;
+use TenantCloud\Serialization\TypeAdapter\Primitive\PrimitiveTypeAdapter;
+use TenantCloud\Serialization\TypeAdapter\Primitive\Type\PrimitiveType;
 use TenantCloud\Serialization\TypeAdapter\TypeAdapterFactory;
 
 #[Immutable]
-final class JsonPrimitiveTypeAdapterFactory implements TypeAdapterFactory
+final class PassthroughPrimitiveTypeAdapterFactory implements TypeAdapterFactory
 {
 	private Type $typeAdapterType;
 
 	private PrimitiveType $primitiveType;
 
+	private PassthroughPrimitiveTypeAdapter $adapter;
+
 	public function __construct()
 	{
-		$this->typeAdapterType = new ObjectType(JsonTypeAdapter::class);
+		$this->typeAdapterType = new ObjectType(PrimitiveTypeAdapter::class);
 		$this->primitiveType = new PrimitiveType();
+		$this->adapter = new PassthroughPrimitiveTypeAdapter();
 	}
 
 	/**
@@ -31,6 +35,6 @@ final class JsonPrimitiveTypeAdapterFactory implements TypeAdapterFactory
 			return null;
 		}
 
-		return new JsonPrimitiveTypeAdapter();
+		return $this->adapter;
 	}
 }

@@ -11,11 +11,11 @@ use TenantCloud\Serialization\TypeAdapter\Primitive\PrimitiveTypeAdapter;
  * @implements JsonTypeAdapter<T>
  */
 #[Immutable]
-class JsonPrimitiveDelegationTypeAdapter implements JsonTypeAdapter
+final class PrimitiveDelegationJsonTypeAdapter implements JsonTypeAdapter
 {
 	public function __construct(
 		private PrimitiveTypeAdapter $primitiveDelegate,
-		private JsonPrimitiveTypeAdapter $jsonPrimitiveDelegate,
+		private PrimitiveJsonTypeAdapter $jsonPrimitiveDelegate,
 	) {
 	}
 

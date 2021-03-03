@@ -10,7 +10,7 @@ use TenantCloud\Serialization\TypeAdapter\TypeAdapterFactory;
 use Throwable;
 
 #[Immutable]
-class TypeAdapterNotFoundException extends RuntimeException
+final class TypeAdapterNotFoundException extends RuntimeException
 {
 	public function __construct(Type $typeAdapterType, Type $type, array $attributes, ?TypeAdapterFactory $skipPast, string | int $code = 0, Throwable $previous = null)
 	{

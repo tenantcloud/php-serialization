@@ -6,6 +6,7 @@ use Ds\Hashable;
 use JetBrains\PhpStorm\Immutable;
 use PHPStan\Type\Type;
 use RuntimeException;
+use TenantCloud\Serialization\TypeAdapter\TypeAdapterFactory;
 
 #[Immutable]
 final class ResolvedKey implements Hashable
@@ -14,9 +15,10 @@ final class ResolvedKey implements Hashable
 	 * @param object[] $attributes
 	 */
 	public function __construct(
-		private Type $typeAdapterType,
-		private Type $type,
-		private array $attributes,
+		public Type $typeAdapterType,
+		public Type $type,
+		public array $attributes,
+		public ?TypeAdapterFactory $skipPast
 	) {
 	}
 
@@ -39,6 +41,7 @@ final class ResolvedKey implements Hashable
 		/* @noinspection TypeUnsafeComparisonInspection */
 		return $this->typeAdapterType->equals($obj->typeAdapterType) &&
 			$this->type->equals($obj->type) &&
-			$this->attributes == $obj->attributes;
+			$this->attributes == $obj->attributes &&
+			$this->skipPast === $obj->skipPast;
 	}
 }

@@ -1,5 +1,6 @@
 includes:
 	- tools/phpstan/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+	- src/TenantCloud/Serialization/TypeAdapter/Primitive/Type/phpstan.neon
 
 parameters:
 	level: 8

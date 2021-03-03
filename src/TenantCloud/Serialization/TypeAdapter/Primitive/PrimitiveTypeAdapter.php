@@ -7,7 +7,7 @@ use TenantCloud\Serialization\TypeAdapter\TypeAdapter;
 /**
  * @template T
  *
- * @implements TypeAdapter<T, p>
+ * @implements TypeAdapter<T, primitive>
  */
 interface PrimitiveTypeAdapter extends TypeAdapter
 {

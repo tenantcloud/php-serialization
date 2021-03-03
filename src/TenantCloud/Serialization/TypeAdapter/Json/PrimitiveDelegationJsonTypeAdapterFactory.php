@@ -13,13 +13,16 @@ use TenantCloud\Serialization\TypeAdapter\TypeAdapterFactory;
  * @implements TypeAdapterFactory<JsonTypeAdapter>
  */
 #[Immutable]
-final class JsonPrimitiveDelegationTypeAdapterFactory implements TypeAdapterFactory
+final class PrimitiveDelegationJsonTypeAdapterFactory implements TypeAdapterFactory
 {
 	private Type $typeAdapterType;
+
+	private PrimitiveJsonTypeAdapter $jsonPrimitiveTypeAdapter;
 
 	public function __construct()
 	{
 		$this->typeAdapterType = new ObjectType(JsonTypeAdapter::class);
+		$this->jsonPrimitiveTypeAdapter = new PrimitiveJsonTypeAdapter();
 	}
 
 	public function create(Type $typeAdapterType, Type $type, array $attributes, Serializer $serializer): ?JsonTypeAdapter
@@ -28,9 +31,9 @@ final class JsonPrimitiveDelegationTypeAdapterFactory implements TypeAdapterFact
 			return null;
 		}
 
-		return new JsonPrimitiveDelegationTypeAdapter(
+		return new PrimitiveDelegationJsonTypeAdapter(
 			$serializer->adapter(PrimitiveTypeAdapter::class, $type, $attributes),
-			new JsonPrimitiveTypeAdapter(),
+			$this->jsonPrimitiveTypeAdapter,
 		);
 	}
 }

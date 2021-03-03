@@ -5,7 +5,7 @@ namespace TenantCloud\Serialization\TypeAdapter\Registry\Factory;
 use JetBrains\PhpStorm\Immutable;
 use PHPStan\Type\Type;
 use TenantCloud\Serialization\TypeAdapter\MatchingDelegate\MatchingDelegateTypeAdapterFactory;
-use TenantCloud\Serialization\TypeAdapter\Primitive\MapperMethods\MapperMethodsTypeAdapterFactoryFactory;
+use TenantCloud\Serialization\TypeAdapter\Primitive\MapperMethods\MapperMethodsPrimitiveTypeAdapterFactoryFactory;
 use TenantCloud\Serialization\TypeAdapter\TypeAdapter;
 use TenantCloud\Serialization\TypeAdapter\TypeAdapterFactory;
 
@@ -15,7 +15,7 @@ final class FactoryTypeAdapterRegistryBuilder
 	private array $factories = [];
 
 	public function __construct(
-		#[Immutable] private MapperMethodsTypeAdapterFactoryFactory $mapperMethodsTypeAdapterFactoryFactory,
+		#[Immutable] private MapperMethodsPrimitiveTypeAdapterFactoryFactory $mapperMethodsTypeAdapterFactoryFactory,
 	) {
 	}
 

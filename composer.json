@@ -10,10 +10,9 @@
 		}
 	],
 	"require": {
-		"php": ">=8.0",
 		"php-ds/php-ds": "dev-master",
-		"phpstan/phpstan-src": "0.12.x-dev",
-		"tenantcloud/php-better-reflection": "dev-master"
+		"tenantcloud/php-better-reflection": "dev-master",
+		"tenantcloud/php-standard": "^1.1.0"
 	},
 	"suggest": {
 		"ext-ds": "*"
@@ -42,7 +41,7 @@
 		}
 	},
 	"scripts": {
-		"test": "./vendor/bin/pest",
+		"test": "./tools/pest/vendor/bin/phpunit",
 		"cs-fix": "./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix -v --show-progress=estimating",
 		"phpstan":  "./tools/phpstan/vendor/bin/phpstan analyse"
 	}

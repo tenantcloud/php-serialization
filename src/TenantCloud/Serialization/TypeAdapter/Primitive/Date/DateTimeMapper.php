@@ -1,6 +1,6 @@
 <?php
 
-namespace TenantCloud\Serialization\TypeAdapter\BuiltIn;
+namespace TenantCloud\Serialization\TypeAdapter\Primitive\Date;
 
 use DateTime;
 use DateTimeInterface;
@@ -18,7 +18,7 @@ final class DateTimeMapper
 	}
 
 	#[MapFrom]
-	public function from(DateTime $value): DateTime
+	public function from(string $value): DateTime
 	{
 		return new DateTime($value);
 	}

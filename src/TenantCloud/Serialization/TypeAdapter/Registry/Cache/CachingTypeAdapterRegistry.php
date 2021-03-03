@@ -23,12 +23,12 @@ final class CachingTypeAdapterRegistry implements TypeAdapterRegistry
 
 	public function forType(Type $typeAdapterType, Serializer $serializer, Type $type, array $attributes = [], TypeAdapterFactory $skipPast = null): TypeAdapter
 	{
-		$key = new ResolvedKey($typeAdapterType, $type, $attributes);
+		$key = new ResolvedKey($typeAdapterType, $type, $attributes, $skipPast);
 
 		if ($factory = $this->resolved[$key] ?? null) {
 			return $factory;
 		}
 
-		return $this->resolved[$key] = $this->delegate->forType($typeAdapterType, $serializer, $type, $attributes);
+		return $this->resolved[$key] = $this->delegate->forType($typeAdapterType, $serializer, $type, $attributes, $skipPast);
 	}
 }
